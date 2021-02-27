@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { PlanetsDBContext } from '../context/PlanetsDBContext';
 import SortButton from './SortButton';
 import usePlanetsFiltering from '../hooks/usePlanetsFiltering';
-import '../styles/Table.css';
 import useSWAPI from '../services/useSWAPI';
 
 const TableHeaders = () => (

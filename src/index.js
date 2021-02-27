@@ -5,7 +5,6 @@ import App from './App';
 // import * as serviceWorker from './serviceWorker';
 import PlanetsDBProvider from './context/PlanetsDBContext';
 
-
 ReactDOM.render(
   <PlanetsDBProvider>
     <App />

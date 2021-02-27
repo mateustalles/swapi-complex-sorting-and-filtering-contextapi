@@ -30,7 +30,6 @@ const addNewFilterRow = (filters, setFilters) => {
   }
 };
 
-
 const sortColumns = (filteredPlanets, filters) => {
   const sortValue = (value) => {
     const noUnknownValue = value === 'unknown' ? 99999999999999999999 : value;
@@ -79,7 +78,6 @@ export default function usePlanetsFiltering() {
     }
     return { ...numericValues };
   });
-
 
   return newFilteredPlanets;
 }

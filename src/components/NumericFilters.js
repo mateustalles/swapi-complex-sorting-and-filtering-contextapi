@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { PlanetsDBContext } from '../context/PlanetsDBContext';
 
-
 function renderColumnsOptions(filterIndex, actualColumn, filters, setFilter) {
   const selectors = [
     ['', '   '],
@@ -88,7 +87,6 @@ function renderRemoveButton(filterIndex, filter, filters, setFilters) {
   );
 }
 
-
 export default function NumericFilters() {
   const { filters: [filters, setFilters] } = useContext(PlanetsDBContext);
   const numericFilters = filters.filter((filter) => 'numericValues' in filter);
@@ -104,7 +102,6 @@ export default function NumericFilters() {
       return filter;
     }),
   );
-
 
   return (
     numericFilters.map((filter, index) => {
