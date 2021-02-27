@@ -5,7 +5,7 @@ export const PlanetsDBContext = createContext();
 
 export default function PlanetsDBProvider({ children }) {
   const [planetsData, setPlanetsData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isFilteredByName, setIsFilteredByName] = useState(false);
   const [filters, setFilters] = useState([
     {
@@ -21,10 +21,25 @@ export default function PlanetsDBProvider({ children }) {
     { column: 'name', order: 'ASC' },
   ]);
 
+  const addNewFilter = (event, filterIndex) => {
+    const numericFilters = filters.filter((filter) => 'numericValues' in filter);
+    setFilters(
+      filters.map((filter) => {
+        if ('numericValues' in filter && numericFilters.indexOf(filter) === filterIndex) {
+          return {
+            numericValues:
+            { ...filter.numericValues, [event.target.id]: event.target.value },
+          };
+        }
+        return filter;
+      }),
+    );
+  };
+
   const store = {
     data: [planetsData, setPlanetsData],
     loading: [isLoading, setIsLoading],
-    filters: [filters, setFilters],
+    filters: [filters, setFilters, addNewFilter],
     nameFilter: [isFilteredByName, setIsFilteredByName],
   };
 

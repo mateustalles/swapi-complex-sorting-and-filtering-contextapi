@@ -2,7 +2,7 @@ import React from 'react';
 import { cleanup, fireEvent, wait } from '@testing-library/react';
 import renderWithRouter from '../services/renderWithRouter';
 import PlanetsDBProvider from '../context/PlanetsDBContext';
-import Table from '../components/Table';
+import PlanetsTable from '../components/PlanetsTable';
 import NameFilter from '../components/NameFilter';
 
 afterEach(cleanup);
@@ -12,7 +12,7 @@ describe('Tests Name Filter Input component', () => {
     const { getByTestId } = renderWithRouter(
       <PlanetsDBProvider>
         <NameFilter />
-        <Table />
+        <PlanetsTable />
       </PlanetsDBProvider>,
     );
 
@@ -24,7 +24,7 @@ describe('Tests Name Filter Input component', () => {
     const { getByTestId, getByText, queryByText } = renderWithRouter(
       <PlanetsDBProvider>
         <NameFilter />
-        <Table />
+        <PlanetsTable />
       </PlanetsDBProvider>,
     );
 
@@ -41,7 +41,7 @@ describe('Tests Name Filter Input component', () => {
     const { getByTestId, getByText, queryByText } = renderWithRouter(
       <PlanetsDBProvider>
         <NameFilter />
-        <Table />
+        <PlanetsTable />
       </PlanetsDBProvider>,
     );
 

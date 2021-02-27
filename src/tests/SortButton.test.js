@@ -2,8 +2,7 @@ import React from 'react';
 import { cleanup, fireEvent } from '@testing-library/react';
 import renderWithRouter from '../services/renderWithRouter';
 import PlanetsDBProvider from '../context/PlanetsDBContext';
-import Table from '../components/Table';
-
+import PlanetsTable from '../components/PlanetsTable';
 
 afterEach(cleanup);
 
@@ -15,7 +14,7 @@ describe('Tests SortButton component', () => {
 
     const { getByTestId } = renderWithRouter(
       <PlanetsDBProvider>
-        <Table />
+        <PlanetsTable />
       </PlanetsDBProvider>,
     );
 
@@ -27,7 +26,7 @@ describe('Tests SortButton component', () => {
 
     const { getByTestId, queryByTestId } = renderWithRouter(
       <PlanetsDBProvider>
-        <Table />
+        <PlanetsTable />
       </PlanetsDBProvider>,
     );
 

@@ -14,7 +14,11 @@ export default function NameFilter() {
 
   return (
     <div>
-      <input data-testid="name-filter-input" type="text" onChange={(e) => dispatchNameFilter(e)} />
+      <input
+        data-testid="name-filter-input"
+        type="text"
+        onChange={(e) => dispatchNameFilter(e)}
+      />
     </div>
   );
 }

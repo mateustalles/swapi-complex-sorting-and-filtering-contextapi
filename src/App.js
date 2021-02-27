@@ -3,7 +3,7 @@ import { Col, Container, Row } from 'react-bootstrap';
 import PlanetsTable from './components/PlanetsTable';
 import NameFilter from './components/NameFilter';
 import './scripts/loader';
-import NumericFilters from './components/NumericFilters';
+import NumericFilters from './components/numericFilters/NumericFilters';
 import './App.scss';
 
 function App() {
@@ -17,9 +17,11 @@ function App() {
               <h1>StarWars Datatable with Filters</h1>
             </div>
             <div>
+              Filter by name:
               <NameFilter />
             </div>
             <div>
+              Filter by numeric data:
               <NumericFilters />
             </div>
           </Col>

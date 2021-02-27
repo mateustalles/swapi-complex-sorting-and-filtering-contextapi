@@ -1,10 +1,10 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useRef, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
 import $ from 'jquery';
 import { PlanetsDBContext } from '../context/PlanetsDBContext';
 import SortButton from './SortButton';
 import usePlanetsFiltering from '../hooks/usePlanetsFiltering';
-import useSWAPI from '../services/useSWAPI';
+import useSWAPI from '../hooks/useSWAPI';
 import '../styles/PlanetsTable.scss';
 
 const tableHeaders = () => (
@@ -56,10 +56,6 @@ const enableTopScroll = () => {
     $('.top-scroll').css('maxWidth', tableWidth);
     $('.top-scroll-content').width(rowWidth + 1);
 
-    const test1 = $('.top-scroll').width();
-    const test2 = $('.top-scroll-content').width();
-
-    console.log(tableWidth, test1, test2);
     $('.top-scroll').scroll(function () {
       $('.table-responsive')
         .scrollLeft($('.top-scroll').scrollLeft());
@@ -72,9 +68,18 @@ const enableTopScroll = () => {
 };
 
 export default function PlanetsTable() {
-  const { loading: [isLoading] } = useContext(PlanetsDBContext);
+  const {
+    data: [, setPlanetsData],
+    loading: [isLoading, setIsLoading],
+  } = useContext(PlanetsDBContext);
 
-  useSWAPI();
+  const planetsData = useSWAPI();
+
+  useEffect(() => {
+    setPlanetsData(planetsData);
+    setIsLoading(false);
+    return () => setPlanetsData([]);
+  });
 
   const tableRef = useRef();
 
@@ -85,12 +90,11 @@ export default function PlanetsTable() {
       <div className="top-scroll">
         <div className="top-scroll-content">&nbsp;</div>
       </div>
-      <Table striped bordered hover responsive className="planets-table" ref={tableRef}>
+      <Table striped bordered hover responsive className="planets-table" data-testid="table-container" ref={tableRef}>
         <thead>
           {tableHeaders()}
         </thead>
         <tbody className="table-body">
-          {/* {console.log(tableRef.current && tableRef.current.clientWidth)} */}
           {planetRows(filteredPlanets)}
         </tbody>
       </Table>

@@ -1,26 +1,23 @@
 import React from 'react';
-import { cleanup, fireEvent, wait } from '@testing-library/react';
+import { cleanup, fireEvent } from '@testing-library/react';
 import renderWithRouter from '../services/renderWithRouter';
 import PlanetsDBProvider from '../context/PlanetsDBContext';
-import Table from '../components/Table';
-import NumericFilters from '../components/NumericFilters';
-
+import PlanetsTable from '../components/PlanetsTable';
+import NumericFilters from '../components/numericFilters/NumericFilters';
 
 afterEach(cleanup);
 
 describe('Tests Number Filter Inputs component', () => {
-  // expect.assertions(6);
   it('selector contains all the columns', () => {
-    expect.assertions(6);
+    expect.assertions(5);
 
     const { getByTestId } = renderWithRouter(
       <PlanetsDBProvider>
         <NumericFilters />
-        <Table />
+        <PlanetsTable />
       </PlanetsDBProvider>,
     );
     const selectors = [
-      ['', '   '],
       ['population', 'Population'],
       ['orbital_period', 'Orbital period'],
       ['diameter', 'Diameter'],
@@ -37,7 +34,7 @@ describe('Tests Number Filter Inputs component', () => {
     const { getByTestId } = renderWithRouter(
       <PlanetsDBProvider>
         <NumericFilters />
-        <Table />
+        <PlanetsTable />
       </PlanetsDBProvider>,
     );
 
@@ -52,7 +49,7 @@ describe('Tests Number Filter Inputs component', () => {
     const { getByTestId } = renderWithRouter(
       <PlanetsDBProvider>
         <NumericFilters />
-        <Table />
+        <PlanetsTable />
       </PlanetsDBProvider>,
     );
 
@@ -65,7 +62,7 @@ describe('Tests Number Filter Inputs component', () => {
     const { getByTestId } = renderWithRouter(
       <PlanetsDBProvider>
         <NumericFilters />
-        <Table />
+        <PlanetsTable />
       </PlanetsDBProvider>,
     );
 
@@ -77,7 +74,7 @@ describe('Tests Number Filter Inputs component', () => {
     const { getByTestId } = renderWithRouter(
       <PlanetsDBProvider>
         <NumericFilters />
-        <Table />
+        <PlanetsTable />
       </PlanetsDBProvider>,
     );
 
@@ -96,13 +93,11 @@ describe('Tests Number Filter Inputs component', () => {
     const { getByTestId, queryByTestId } = renderWithRouter(
       <PlanetsDBProvider>
         <NumericFilters />
-        <Table />
+        <PlanetsTable />
       </PlanetsDBProvider>,
     );
-    const indexArray = [0, 1, 2, 3, 4];
 
     const selectors = [
-      ['', '   '],
       ['population', 'Population'],
       ['orbital_period', 'Orbital period'],
       ['diameter', 'Diameter'],
@@ -110,25 +105,16 @@ describe('Tests Number Filter Inputs component', () => {
       ['surface_water', 'Surface water'],
     ];
 
-    indexArray.forEach((index) => {
+    selectors.forEach((selector, index) => {
       fireEvent.change(getByTestId(`column-selector-${index}`),
-        { target: { value: index !== 4 ? `${selectors[index + 1][0]}` : `${selectors[5][0]}` } });
+        { target: { value: `${selectors[index][0]}` } });
       fireEvent.change(getByTestId(`comparison-selector-${index}`), { target: { value: 'lesserThan' } });
       fireEvent.change(getByTestId(`value-selector-${index}`), { target: { value: '30000000' } });
 
-      if (index === 4) {
-        expect(queryByTestId(`remove-filter-button-${index + 1}`)).toBeNull();
-        expect(queryByTestId(`column-selector-${index + 1}`)).toBeNull();
-        expect(queryByTestId(`comparison-selector-${index + 1}`)).toBeNull();
-        expect(queryByTestId(`value-selector-${index + 1}`)).toBeNull();
-      }
-
-      if (index !== 4) {
-        expect(getByTestId(`remove-filter-button-${index + 1}`)).toBeInTheDocument();
-        expect(getByTestId(`column-selector-${index + 1}`)).toBeInTheDocument();
-        expect(getByTestId(`comparison-selector-${index + 1}`)).toBeInTheDocument();
-        expect(getByTestId(`value-selector-${index + 1}`)).toBeInTheDocument();
-      }
+      expect(getByTestId(`remove-filter-button-${index}`)).toBeInTheDocument();
+      expect(getByTestId(`column-selector-${index}`)).toBeInTheDocument();
+      expect(getByTestId(`comparison-selector-${index}`)).toBeInTheDocument();
+      expect(getByTestId(`value-selector-${index}`)).toBeInTheDocument();
     });
   });
 
@@ -138,7 +124,7 @@ describe('Tests Number Filter Inputs component', () => {
     const { getByTestId, queryByTestId } = renderWithRouter(
       <PlanetsDBProvider>
         <NumericFilters />
-        <Table />
+        <PlanetsTable />
       </PlanetsDBProvider>,
     );
 
@@ -160,7 +146,7 @@ describe('Tests Number Filter Inputs component', () => {
     const { getByTestId, queryByTestId } = renderWithRouter(
       <PlanetsDBProvider>
         <NumericFilters />
-        <Table />
+        <PlanetsTable />
       </PlanetsDBProvider>,
     );
 
@@ -173,20 +159,17 @@ describe('Tests Number Filter Inputs component', () => {
   });
 
   it('will not delete the last filter row - II', () => {
-    expect.assertions(29);
+    expect.assertions(1);
     const { getByTestId, queryByTestId } = renderWithRouter(
       <PlanetsDBProvider>
         <NumericFilters />
-        <Table />
+        <PlanetsTable />
       </PlanetsDBProvider>,
     );
 
-    const indexArray = [0, 1, 2, 3, 4];
-
-    const reverseArray = [4, 3, 2, 1, 0];
+    const reverseArray = [3, 2, 1, 0];
 
     const selectors = [
-      ['', '   '],
       ['population', 'Population'],
       ['orbital_period', 'Orbital period'],
       ['diameter', 'Diameter'],
@@ -194,37 +177,17 @@ describe('Tests Number Filter Inputs component', () => {
       ['surface_water', 'Surface water'],
     ];
 
-    indexArray.forEach((index) => {
+    selectors.forEach((selector, index) => {
       fireEvent.change(getByTestId(`column-selector-${index}`),
-        { target: { value: index !== 4 ? `${selectors[index + 1][0]}` : `${selectors[5][0]}` } });
+        { target: { value: `${selectors[index][0]}` } });
       fireEvent.change(getByTestId(`comparison-selector-${index}`), { target: { value: 'lesserThan' } });
       fireEvent.change(getByTestId(`value-selector-${index}`), { target: { value: '30000000' } });
-
-      if (index === 4) {
-        expect(queryByTestId(`remove-filter-button-${index + 1}`)).toBeNull();
-        expect(queryByTestId(`column-selector-${index + 1}`)).toBeNull();
-        expect(queryByTestId(`comparison-selector-${index + 1}`)).toBeNull();
-        expect(queryByTestId(`value-selector-${index + 1}`)).toBeNull();
-      }
-
-      if (index !== 4) {
-        expect(getByTestId(`remove-filter-button-${index + 1}`)).toBeInTheDocument();
-        expect(getByTestId(`column-selector-${index + 1}`)).toBeInTheDocument();
-        expect(getByTestId(`comparison-selector-${index + 1}`)).toBeInTheDocument();
-        expect(getByTestId(`value-selector-${index + 1}`)).toBeInTheDocument();
-      }
     });
 
     reverseArray.forEach((rowIndex) => {
-      if (rowIndex !== 0) {
-        fireEvent.click(getByTestId(`remove-filter-button-${rowIndex}`));
-        fireEvent.click(getByTestId(`remove-filter-button-${rowIndex - 1}`));
-        expect(queryByTestId(`remove-filter-button-${rowIndex}`)).toBeNull();
-      } else {
-        fireEvent.click(getByTestId(`remove-filter-button-${rowIndex}`));
-        fireEvent.click(getByTestId(`remove-filter-button-${rowIndex}`));
-        expect(getByTestId(`remove-filter-button-${rowIndex}`)).toBeInTheDocument();
-      }
+      fireEvent.click(getByTestId(`remove-filter-button-${rowIndex}`));
+      fireEvent.click(getByTestId(`remove-filter-button-${rowIndex - 1}`));
+      expect(queryByTestId(`remove-filter-button-${rowIndex}`)).toBeNull();
     });
 
     expect(queryByTestId('remove-filter-button-0')).toBeInTheDocument();
@@ -238,7 +201,7 @@ describe('Tests Number Filter Inputs component', () => {
     const { getByTestId, queryByTestId } = renderWithRouter(
       <PlanetsDBProvider>
         <NumericFilters />
-        <Table />
+        <PlanetsTable />
       </PlanetsDBProvider>,
     );
 
