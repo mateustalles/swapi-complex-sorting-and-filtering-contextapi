@@ -1,10 +1,13 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
+import { Table } from 'react-bootstrap';
+import $ from 'jquery';
 import { PlanetsDBContext } from '../context/PlanetsDBContext';
 import SortButton from './SortButton';
 import usePlanetsFiltering from '../hooks/usePlanetsFiltering';
 import useSWAPI from '../services/useSWAPI';
+import '../styles/PlanetsTable.scss';
 
-const TableHeaders = () => (
+const tableHeaders = () => (
   <tr>
     <th><SortButton columnName="name">Name</SortButton></th>
     <th><SortButton columnName="rotation_period">Rotation period</SortButton></th>
@@ -28,7 +31,7 @@ const planetRows = (planetsData) => (
     climate, gravity, terrain, surface_water: surfaceWater, population, films, created,
     edited, url,
   }) => (
-    <tr data-testid="table-row" key={name}>
+    <tr className="planet-row" data-testid="table-row" key={name}>
       <td>{name}</td>
       <td className="rotation-period">{rotationPeriod}</td>
       <td className="orbital-period">{orbitalPeriod}</td>
@@ -46,26 +49,52 @@ const planetRows = (planetsData) => (
   ))
 );
 
-export default function Table() {
+const enableTopScroll = () => {
+  $(function () {
+    const tableWidth = $('.table-responsive').width();
+    const rowWidth = $('.planet-row').width();
+    $('.top-scroll').css('maxWidth', tableWidth);
+    $('.top-scroll-content').width(rowWidth + 1);
+
+    const test1 = $('.top-scroll').width();
+    const test2 = $('.top-scroll-content').width();
+
+    console.log(tableWidth, test1, test2);
+    $('.top-scroll').scroll(function () {
+      $('.table-responsive')
+        .scrollLeft($('.top-scroll').scrollLeft());
+    });
+    $('.table-responsive').scroll(function () {
+      $('.top-scroll')
+        .scrollLeft($('.table-responsive').scrollLeft());
+    });
+  });
+};
+
+export default function PlanetsTable() {
   const { loading: [isLoading] } = useContext(PlanetsDBContext);
 
   useSWAPI();
 
-  const filteredPlanets = usePlanetsFiltering();
+  const tableRef = useRef();
 
+  const filteredPlanets = usePlanetsFiltering();
   return (
     <div>
       {isLoading && <span>Loading...</span> }
-      <div data-testid="table-container" className="table-container">
-        <table className="table">
-          <thead>
-            <TableHeaders />
-          </thead>
-          <tbody>
-            {planetRows(filteredPlanets)}
-          </tbody>
-        </table>
+      <div className="top-scroll">
+        <div className="top-scroll-content">&nbsp;</div>
       </div>
+      <Table striped bordered hover responsive className="planets-table" ref={tableRef}>
+        <thead>
+          {tableHeaders()}
+        </thead>
+        <tbody className="table-body">
+          {/* {console.log(tableRef.current && tableRef.current.clientWidth)} */}
+          {planetRows(filteredPlanets)}
+        </tbody>
+      </Table>
+      {enableTopScroll()}
     </div>
   );
 }
