@@ -21,7 +21,7 @@ const filterByNumericValues = (newFilteredPlanets, { column, value, comparison }
   );
 };
 
-const addNewFilterRow = (filters, setFilters) => {
+const updateFiltersRow = (filters, setFilters) => {
   const numericFilters = filters.filter((filter) => 'numericValues' in filter);
   const lastFilter = numericFilters[numericFilters.length - 1];
   const { numericValues: { column, comparison, value } } = lastFilter;
@@ -73,7 +73,7 @@ export default function usePlanetsFiltering() {
   numericFilters.map(({ numericValues, numericValues: { column, comparison, value } }) => {
     if (numericValues && column !== '' && comparison !== '' && value !== '') {
       newFilteredPlanets = filterByNumericValues(newFilteredPlanets, numericValues);
-      addNewFilterRow(filters, setFilters);
+      updateFiltersRow(filters, setFilters);
     }
     return { ...numericValues };
   });

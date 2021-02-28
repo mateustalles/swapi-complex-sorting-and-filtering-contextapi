@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { PlanetsDBContext } from '../../context/PlanetsDBContext';
 
 export default function ColumnsField(filterIndex, selectedCol) {
-  const { filters: [filters, , addNewFilter] } = useContext(PlanetsDBContext);
+  const { filters: [filters, , updateFilters] } = useContext(PlanetsDBContext);
 
   const selectors = [
     ['population', 'Population'],
@@ -24,11 +24,11 @@ export default function ColumnsField(filterIndex, selectedCol) {
   return (
     <select
       data-testid={`column-selector-${filterIndex}`}
-      onChange={(e) => addNewFilter(e, filterIndex)}
+      onChange={(e) => updateFilters(e, filterIndex)}
       id="column"
       value={selectedCol}
     >
-      <option value="" disabled selected>Select parameter</option>
+      <option value="" disabled defaultValue>Select parameter</option>
       {availableSelectors.map(
         ([value, label]) => (
           <option

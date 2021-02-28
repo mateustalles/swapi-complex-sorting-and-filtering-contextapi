@@ -21,25 +21,24 @@ export default function PlanetsDBProvider({ children }) {
     { column: 'name', order: 'ASC' },
   ]);
 
-  const addNewFilter = (event, filterIndex) => {
+  const updateFilters = (event, filterIndex) => {
     const numericFilters = filters.filter((filter) => 'numericValues' in filter);
-    setFilters(
-      filters.map((filter) => {
-        if ('numericValues' in filter && numericFilters.indexOf(filter) === filterIndex) {
-          return {
-            numericValues:
+    const selectedFilters = numericFilters.map((filter, index) => {
+      if (index === filterIndex) {
+        return {
+          numericValues:
             { ...filter.numericValues, [event.target.id]: event.target.value },
-          };
-        }
-        return filter;
-      }),
-    );
+        };
+      }
+      return filter;
+    });
+    return setFilters(selectedFilters);
   };
 
   const store = {
     data: [planetsData, setPlanetsData],
     loading: [isLoading, setIsLoading],
-    filters: [filters, setFilters, addNewFilter],
+    filters: [filters, setFilters, updateFilters],
     nameFilter: [isFilteredByName, setIsFilteredByName],
   };
 

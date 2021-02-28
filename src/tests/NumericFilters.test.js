@@ -187,7 +187,7 @@ describe('Tests Number Filter Inputs component', () => {
     reverseArray.forEach((rowIndex) => {
       fireEvent.click(getByTestId(`remove-filter-button-${rowIndex}`));
       fireEvent.click(getByTestId(`remove-filter-button-${rowIndex - 1}`));
-      expect(queryByTestId(`remove-filter-button-${rowIndex}`)).toBeNull();
+      expect(queryByTestId(`remove-filter-button-${rowIndex}`)).toBeInTheDocument();
     });
 
     expect(queryByTestId('remove-filter-button-0')).toBeInTheDocument();
