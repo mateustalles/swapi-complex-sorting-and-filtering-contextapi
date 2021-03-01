@@ -1,15 +1,12 @@
-import React, { useContext } from 'react';
-import { PlanetsDBContext } from '../../context/PlanetsDBContext';
+import React from 'react';
 
-export default function ComparisonField(filterIndex, selectedOp) {
-  const { filters: [, , updateFilters] } = useContext(PlanetsDBContext);
-
+export default function ComparisonField(filterIndex, comparison, updateFilters) {
   return (
     <select
       data-testid={`comparison-selector-${filterIndex}`}
       onChange={(e) => updateFilters(e, filterIndex)}
       id="comparison"
-      value={selectedOp}
+      value={comparison}
     >
       <option data-testid={`null-comparison-${filterIndex}`} label=" " value="" defaultValue />
       <option data-testid={`lesserThan-comparison-${filterIndex}`} value="lesserThan">{'<'}</option>

@@ -20,26 +20,20 @@ export default function PlanetsDBProvider({ children }) {
     },
     { column: 'name', order: 'ASC' },
   ]);
-
-  const updateFilters = (event, filterIndex) => {
-    const numericFilters = filters.filter((filter) => 'numericValues' in filter);
-    const selectedFilters = numericFilters.map((filter, index) => {
-      if (index === filterIndex) {
-        return {
-          numericValues:
-            { ...filter.numericValues, [event.target.id]: event.target.value },
-        };
-      }
-      return filter;
-    });
-    return setFilters(selectedFilters);
-  };
+  const [selectors, setSelectors] = useState([
+    ['population', 'Population'],
+    ['orbital_period', 'Orbital period'],
+    ['diameter', 'Diameter'],
+    ['rotation_period', 'Rotation period'],
+    ['surface_water', 'Surface water'],
+  ]);
 
   const store = {
     data: [planetsData, setPlanetsData],
     loading: [isLoading, setIsLoading],
-    filters: [filters, setFilters, updateFilters],
+    filters: [filters, setFilters],
     nameFilter: [isFilteredByName, setIsFilteredByName],
+    selectors: [selectors, setSelectors],
   };
 
   return <PlanetsDBContext.Provider value={store}>{children}</PlanetsDBContext.Provider>;

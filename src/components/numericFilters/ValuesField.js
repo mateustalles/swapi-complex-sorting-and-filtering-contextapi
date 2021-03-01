@@ -1,9 +1,6 @@
-import React, { useContext } from 'react';
-import { PlanetsDBContext } from '../../context/PlanetsDBContext';
+import React from 'react';
 
-export default function ValuesField(filterIndex, selectedValue) {
-  const { filters: [, , updateFilters] } = useContext(PlanetsDBContext);
-
+export default function ValuesField(filterIndex, value, updateFilters) {
   return (
     <input
       data-testid={`value-selector-${filterIndex}`}
@@ -11,7 +8,7 @@ export default function ValuesField(filterIndex, selectedValue) {
       type="number"
       id="value"
       width="100px"
-      value={selectedValue}
+      value={value}
     />
   );
 }

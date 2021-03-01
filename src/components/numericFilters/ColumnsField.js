@@ -1,32 +1,25 @@
 import React, { useContext } from 'react';
 import { PlanetsDBContext } from '../../context/PlanetsDBContext';
 
-export default function ColumnsField(filterIndex, selectedCol) {
-  const { filters: [filters, , updateFilters] } = useContext(PlanetsDBContext);
+export default function ColumnsField(numericFilters, filterIndex, column, updateFilters) {
+  const { selectors: [selectors, setSelectors] } = useContext(PlanetsDBContext);
 
-  const selectors = [
-    ['population', 'Population'],
-    ['orbital_period', 'Orbital period'],
-    ['diameter', 'Diameter'],
-    ['rotation_period', 'Rotation period'],
-    ['surface_water', 'Surface water'],
-  ];
+  const usedColumns = numericFilters.map((filter) => filter.numericValues.column);
 
-  const usedColumns = filters.map(
-    (filter) => 'numericValues' in filter && filter.numericValues.column,
-  );
-
-  const availableSelectors = selectors.filter(
-    (selector) => (
-      !(usedColumns.includes(selector[0])) || selector[0] === selectedCol),
-  );
+  const availableSelectors = selectors.filter((selector) => (
+    !usedColumns.includes(selector[0]) || selector[0] === column
+  ));
 
   return (
     <select
       data-testid={`column-selector-${filterIndex}`}
-      onChange={(e) => updateFilters(e, filterIndex)}
+      onChange={(e) => {
+        console.log('teste');
+        updateFilters(e, filterIndex);
+        setSelectors(selectors.filter((selector) => !selector.includes(column)));
+      }}
       id="column"
-      value={selectedCol}
+      value={column}
     >
       <option value="" disabled defaultValue>Select parameter</option>
       {availableSelectors.map(
