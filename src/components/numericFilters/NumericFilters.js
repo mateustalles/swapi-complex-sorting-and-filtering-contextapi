@@ -37,7 +37,7 @@ export default function NumericFilters() {
           {ColumnsField(numericFilters, filterIndex, column, updateFilters)}
           {ComparisonField(filterIndex, comparison, updateFilters)}
           {ValuesField(filterIndex, value, updateFilters)}
-          {DeleteFieldButton(numericFilters, filterIndex)}
+          {DeleteFieldButton(filterIndex)}
         </div>
       );
     })

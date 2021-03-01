@@ -1,19 +1,22 @@
 import React, { useContext } from 'react';
 import { PlanetsDBContext } from '../../context/PlanetsDBContext';
 
-export default function DeleteFieldButton(numericFilters, filterIndex) {
+export default function DeleteFieldButton(filterIndex) {
   const { filters: [filters, setFilters] } = useContext(PlanetsDBContext);
 
-  const removeFilterRow = () => numericFilters.length > 1
-    && setFilters(
-      [...filters.filter((el, index) => index !== filterIndex + 1)],
-    );
+  const removeFilter = () => {
+    const filteredFilters = filters.filter((filter, index) => {
+      if ('numericValues' in filter && index === filterIndex + 1) return false;
+      return filter;
+    });
+    return setFilters(filteredFilters);
+  };
 
   return (
     <button
       data-testid={`remove-filter-button-${filterIndex}`}
       type="button"
-      onClick={() => removeFilterRow()}
+      onClick={removeFilter}
       id="remove"
     >
       X
