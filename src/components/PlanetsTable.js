@@ -1,7 +1,7 @@
-import React, { useContext, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
 import $ from 'jquery';
-import { PlanetsDBContext } from '../context/PlanetsDBContext';
+// import { PlanetsDBContext } from '../context/PlanetsDBContext';
 import SortButton from './SortButton';
 import usePlanetsFiltering from '../hooks/usePlanetsFiltering';
 import useSWAPI from '../hooks/useSWAPI';
@@ -25,7 +25,7 @@ const TableHeaders = () => (
   </tr>
 );
 
-const PlanetsRows = (filteredPlanets) => (
+const PlanetsRows = ({ filteredPlanets }) => (
   filteredPlanets.map(({
     name, rotation_period: rotationPeriod, orbital_period: orbitalPeriod, diameter,
     climate, gravity, terrain, surface_water: surfaceWater, population, films, created,
@@ -68,22 +68,18 @@ const enableTopScroll = () => {
 };
 
 export default function PlanetsTable() {
-  const { loading: [isLoading, setIsLoading] } = useContext(PlanetsDBContext);
-
-  const planetsData = useSWAPI();
-  const filteredPlanets = usePlanetsFiltering(planetsData);
+  const data = useSWAPI();
+  const filteredPlanets = usePlanetsFiltering(data);
 
   useEffect(() => {
-    setIsLoading(false);
     enableTopScroll();
-    return () => setIsLoading(true);
-  }, [setIsLoading]);
+  }, []);
 
   const tableRef = useRef();
 
   return (
     <div>
-      {isLoading && <span>Loading...</span> }
+      {/* {isLoading && <span>Loading...</span> } */}
       <div className="top-scroll">
         <div className="top-scroll-content">&nbsp;</div>
       </div>
@@ -92,7 +88,7 @@ export default function PlanetsTable() {
           <TableHeaders />
         </thead>
         <tbody className="table-body">
-          {filteredPlanets && PlanetsRows(filteredPlanets)}
+          <PlanetsRows filteredPlanets={filteredPlanets} />
         </tbody>
       </Table>
     </div>
