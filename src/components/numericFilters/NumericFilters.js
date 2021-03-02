@@ -34,10 +34,19 @@ export default function NumericFilters() {
 
       return (
         <div key={`row_${filterIndex}`} data-testid={`filter-row-${filterIndex}`}>
-          {ColumnsField(numericFilters, filterIndex, column, updateFilters)}
-          {ComparisonField(filterIndex, comparison, updateFilters)}
-          {ValuesField(filterIndex, value, updateFilters)}
-          {DeleteFieldButton(filterIndex)}
+          <ColumnsField
+            numericFilters={numericFilters}
+            filterIndex={filterIndex}
+            column={column}
+            updateFilters={updateFilters}
+          />
+          <ComparisonField
+            filterIndex={filterIndex}
+            comparison={comparison}
+            updateFilters={updateFilters}
+          />
+          <ValuesField filterIndex={filterIndex} value={value} updateFilters={updateFilters} />
+          <DeleteFieldButton filterIndex={filterIndex} />
         </div>
       );
     })

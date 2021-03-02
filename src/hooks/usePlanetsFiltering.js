@@ -53,10 +53,8 @@ const sortColumns = (filteredPlanets, filters) => {
   return sortedPlanets;
 };
 
-export default function usePlanetsFiltering() {
-  const {
-    filters: [filters, setFilters], data: [planetsData],
-  } = useContext(PlanetsDBContext);
+export default function usePlanetsFiltering(planetsData) {
+  const { filters: [filters, setFilters] } = useContext(PlanetsDBContext);
 
   let newFilteredPlanets = planetsData;
 

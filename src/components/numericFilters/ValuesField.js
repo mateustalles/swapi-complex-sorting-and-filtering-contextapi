@@ -1,6 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-export default function ValuesField(filterIndex, value, updateFilters) {
+export default function ValuesField({ filterIndex, value, updateFilters }) {
   return (
     <input
       data-testid={`value-selector-${filterIndex}`}
@@ -12,3 +13,9 @@ export default function ValuesField(filterIndex, value, updateFilters) {
     />
   );
 }
+
+ValuesField.propTypes = {
+  filterIndex: PropTypes.number.isRequired,
+  value: PropTypes.string.isRequired,
+  updateFilters: PropTypes.func.isRequired,
+};

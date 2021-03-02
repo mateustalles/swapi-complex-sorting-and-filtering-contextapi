@@ -68,22 +68,18 @@ const enableTopScroll = () => {
 };
 
 export default function PlanetsTable() {
-  const {
-    data: [, setPlanetsData],
-    loading: [isLoading, setIsLoading],
-  } = useContext(PlanetsDBContext);
+  const { loading: [isLoading, setIsLoading] } = useContext(PlanetsDBContext);
 
   const planetsData = useSWAPI();
+  const filteredPlanets = usePlanetsFiltering(planetsData);
 
   useEffect(() => {
-    setPlanetsData(planetsData);
     setIsLoading(false);
-    return () => setPlanetsData([]);
+    return () => setIsLoading(true);
   });
 
   const tableRef = useRef();
 
-  const filteredPlanets = usePlanetsFiltering();
   return (
     <div>
       {isLoading && <span>Loading...</span> }

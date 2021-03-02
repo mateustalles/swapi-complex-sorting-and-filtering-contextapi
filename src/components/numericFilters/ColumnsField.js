@@ -1,7 +1,10 @@
 import React, { useContext } from 'react';
+import PropTypes from 'prop-types';
 import { PlanetsDBContext } from '../../context/PlanetsDBContext';
 
-export default function ColumnsField(numericFilters, filterIndex, column, updateFilters) {
+export default function ColumnsField({
+  numericFilters, filterIndex, column, updateFilters,
+}) {
   const { selectors: [selectors, setSelectors] } = useContext(PlanetsDBContext);
 
   const usedColumns = numericFilters.map((filter) => filter.numericValues.column);
@@ -14,7 +17,6 @@ export default function ColumnsField(numericFilters, filterIndex, column, update
     <select
       data-testid={`column-selector-${filterIndex}`}
       onChange={(e) => {
-        console.log('teste');
         updateFilters(e, filterIndex);
         setSelectors(selectors.filter((selector) => !selector.includes(column)));
       }}
@@ -36,3 +38,10 @@ export default function ColumnsField(numericFilters, filterIndex, column, update
     </select>
   );
 }
+
+ColumnsField.propTypes = {
+  numericFilters: PropTypes.arrayOf(Object).isRequired,
+  filterIndex: PropTypes.number.isRequired,
+  column: PropTypes.string.isRequired,
+  updateFilters: PropTypes.func.isRequired,
+};

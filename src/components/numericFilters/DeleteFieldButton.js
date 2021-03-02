@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
+import PropTypes from 'prop-types';
 import { PlanetsDBContext } from '../../context/PlanetsDBContext';
 
-export default function DeleteFieldButton(filterIndex) {
+export default function DeleteFieldButton({ filterIndex }) {
   const { filters: [filters, setFilters] } = useContext(PlanetsDBContext);
 
   const removeFilter = () => {
@@ -23,3 +24,7 @@ export default function DeleteFieldButton(filterIndex) {
     </button>
   );
 }
+
+DeleteFieldButton.propTypes = {
+  filterIndex: PropTypes.number.isRequired,
+};

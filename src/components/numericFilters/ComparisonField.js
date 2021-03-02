@@ -1,6 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-export default function ComparisonField(filterIndex, comparison, updateFilters) {
+export default function ComparisonField({ filterIndex, comparison, updateFilters }) {
   return (
     <select
       data-testid={`comparison-selector-${filterIndex}`}
@@ -16,3 +17,9 @@ export default function ComparisonField(filterIndex, comparison, updateFilters) 
 
   );
 }
+
+ComparisonField.propTypes = {
+  filterIndex: PropTypes.number.isRequired,
+  comparison: PropTypes.string.isRequired,
+  updateFilters: PropTypes.func.isRequired,
+};
