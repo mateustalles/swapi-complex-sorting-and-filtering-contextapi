@@ -1,39 +1,49 @@
-import { useContext } from 'react';
+import {
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from 'react';
 import { PlanetsDBContext } from '../context/PlanetsDBContext';
 import useNumericFilters from './useNumericFilters';
 import useNameFilter from './useNameFilter';
 import useSortFilters from './useSortFilters';
 
-const filterByName = (nameFilter, newFilteredPlanets) => {
-  const newNameFilter = `.*${nameFilter}.*`;
-  const regExpFilter = new RegExp(newNameFilter, 'yi');
-  return newFilteredPlanets.filter(
-    (planet) => planet.name.match(regExpFilter),
-  );
+const filterByName = (nameFilter, filteredPlanets) => {
+  if (nameFilter.name !== '') {
+    const newNameFilter = `.*${nameFilter}.*`;
+    const regExpFilter = new RegExp(newNameFilter, 'yi');
+    return filteredPlanets.filter(
+      (planet) => planet.name.match(regExpFilter),
+    );
+  }
+  return filteredPlanets;
 };
 
-const filterByNumericValues = (newFilteredPlanets, { column, value, comparison }) => {
-  const columnComparison = (comparedColumn, comparedValue) => ({
+const filterByNumericValues = (filteredPlanets, { column, value, comparison }) => {
+  const comparator = (comparedColumn, comparedValue) => ({
     lesserThan: () => comparedColumn < comparedValue,
     equalsThan: () => comparedColumn === comparedValue,
     higherThan: () => comparedColumn > comparedValue,
   });
 
-  return newFilteredPlanets.filter(
-    (planet) => columnComparison(Number(planet[column]), Number(value))[comparison](),
+  return filteredPlanets.filter(
+    (planet) => comparator(Number(planet[column]), Number(value))[comparison](),
   );
 };
 
-const updateFiltersRow = (filters, setFilters) => {
-  const numericFilters = filters.filter((filter) => 'numericValues' in filter);
-  const lastFilter = numericFilters[numericFilters.length - 1];
-  const { numericValues: { column, comparison, value } } = lastFilter;
-  if (column !== '' && comparison !== '' && value !== '' && numericFilters.length < 5) {
-    setFilters([...filters, { numericValues: { column: '', comparison: '', value: '' } }]);
-  }
-};
+// const addFilterRow = (numericFilters, filters, setFilters) => {
+//   if (numericFilters.length < 5) {
+//     setFilters([...filters, { numericValues: { column: '', comparison: '', value: '' } }]);
+//   }
+// };
 
-const sortColumns = (filteredPlanets, sortFilters) => {
+// const removeLastFilterRow = (filters, setFilters) => {
+//   const poppedFilter = filters.pop();
+//   setFilters(poppedFilter);
+// };
+
+const sortColumns = (sortFilters, filteredPlanets) => {
   const sortedPlanets = sortFilters.map(({ order, column }) => {
     if (order === 'ASC') {
       return filteredPlanets.sort(
@@ -54,24 +64,59 @@ export default function usePlanetsFiltering(planetsData) {
   const numericFilters = useNumericFilters(filters);
   const nameFilter = useNameFilter(filters);
   const sortFilters = useSortFilters(filters);
+  const [filteredPlanets, setFilteredPlanets] = useState(planetsData);
 
-  let filteredPlanets = planetsData;
+  const previousValues = useRef({ numericFilters, nameFilter, sortFilters });
 
-  filteredPlanets = sortColumns(filteredPlanets, sortFilters);
+  useEffect(() => {
+    const prevRef = previousValues.current;
 
-  filters.forEach((filter) => {
-    if ('name' in filter && filter.name !== '') {
-      filteredPlanets = filterByName(filters[0].name, filteredPlanets);
+    if (previousValues.current.sortFilters !== sortFilters) {
+      const sortedPlanets = sortColumns(sortFilters, filteredPlanets);
+      setFilteredPlanets(sortedPlanets);
+      previousValues.current.sortFilters = sortFilters;
     }
-  });
 
-  numericFilters.map(({ numericValues, numericValues: { column, comparison, value } }) => {
-    if (numericValues && column !== '' && comparison !== '' && value !== '') {
-      filteredPlanets = filterByNumericValues(filteredPlanets, numericValues);
-      updateFiltersRow(filters, setFilters);
+    return () => {
+      setFilteredPlanets(planetsData);
+      previousValues.current = prevRef;
+    };
+  }, [planetsData, filteredPlanets, sortFilters]);
+
+  useEffect(() => {
+    const prevRef = previousValues.current;
+
+    if (previousValues.current.nameFilter !== nameFilter) {
+      const planetsByName = filterByName(nameFilter, filteredPlanets);
+      setFilteredPlanets(planetsByName);
+      previousValues.current.nameFilter = nameFilter;
     }
-    return { ...numericValues };
-  });
+
+    return () => {
+      setFilteredPlanets(planetsData);
+      previousValues.current = prevRef;
+    };
+  }, [planetsData, filteredPlanets, nameFilter]);
+
+  useEffect(() => {
+    const prevRef = previousValues.current;
+
+    if (previousValues.current.numericFilters !== numericFilters) {
+      numericFilters.forEach(({ numericValues, numericValues: { column, comparison, value } }) => {
+        if (column !== '' && comparison !== '' && value !== '') {
+          const planetsByNumericData = filterByNumericValues(filteredPlanets, numericValues);
+          setFilteredPlanets(planetsByNumericData);
+          // addFilterRow(numericFilters, filters, setFilters);
+        }
+      });
+      previousValues.current.numericFilters = numericFilters;
+    }
+    return () => {
+      setFilteredPlanets(planetsData);
+      previousValues.current = prevRef;
+      // removeLastFilterRow(filters, setFilters);
+    };
+  }, [filters, numericFilters, setFilters, filteredPlanets, planetsData]);
 
   return filteredPlanets;
 }
