@@ -1,5 +1,8 @@
 import { useContext } from 'react';
 import { PlanetsDBContext } from '../context/PlanetsDBContext';
+import useNumericFilters from './useNumericFilters';
+import useNameFilter from './useNameFilter';
+import useSortFilters from './useSortFilters';
 
 const filterByName = (nameFilter, newFilteredPlanets) => {
   const newNameFilter = `.*${nameFilter}.*`;
@@ -30,51 +33,45 @@ const updateFiltersRow = (filters, setFilters) => {
   }
 };
 
-const sortColumns = (filteredPlanets, filters) => {
-  const sortValue = (value) => {
-    const noUnknownValue = value === 'unknown' ? 99999999999999999999 : value;
-    return String(noUnknownValue).match(/[aA-zZ]/g) ? String(noUnknownValue) : Number(noUnknownValue);
-  };
+const sortColumns = (filteredPlanets, sortFilters) => {
+  const sortedPlanets = sortFilters.map(({ order, column }) => {
+    if (order === 'ASC') {
+      return filteredPlanets.sort(
+        (planetA, planetB) => (planetA[column] > planetB[column] ? 1 : -1),
+      );
+    }
 
-  let sortedPlanets = [];
-  filters.forEach(({ order, column }) => {
-    if (order && order === 'ASC') {
-      sortedPlanets = filteredPlanets.sort(
-        (planetA, planetB) => (sortValue(planetA[column]) > sortValue(planetB[column]) ? 1 : -1),
-      );
-    }
-    if (order && order === 'DESC') {
-      sortedPlanets = filteredPlanets.sort(
-        (planetA, planetB) => sortValue((planetA[column]) < sortValue(planetB[column]) ? 1 : -1),
-      );
-    }
-    sortedPlanets = filteredPlanets;
+    return filteredPlanets.sort(
+      (planetA, planetB) => (planetA[column] < planetB[column] ? 1 : -1),
+    );
   });
+
   return sortedPlanets;
 };
 
 export default function usePlanetsFiltering(planetsData) {
   const { filters: [filters, setFilters] } = useContext(PlanetsDBContext);
+  const numericFilters = useNumericFilters(filters);
+  const nameFilter = useNameFilter(filters);
+  const sortFilters = useSortFilters(filters);
 
-  let newFilteredPlanets = planetsData;
+  let filteredPlanets = planetsData;
 
-  newFilteredPlanets = sortColumns(newFilteredPlanets, filters);
-
-  const numericFilters = filters.filter((filter) => 'numericValues' in filter);
+  filteredPlanets = sortColumns(filteredPlanets, sortFilters);
 
   filters.forEach((filter) => {
     if ('name' in filter && filter.name !== '') {
-      newFilteredPlanets = filterByName(filters[0].name, newFilteredPlanets);
+      filteredPlanets = filterByName(filters[0].name, filteredPlanets);
     }
   });
 
   numericFilters.map(({ numericValues, numericValues: { column, comparison, value } }) => {
     if (numericValues && column !== '' && comparison !== '' && value !== '') {
-      newFilteredPlanets = filterByNumericValues(newFilteredPlanets, numericValues);
+      filteredPlanets = filterByNumericValues(filteredPlanets, numericValues);
       updateFiltersRow(filters, setFilters);
     }
     return { ...numericValues };
   });
 
-  return newFilteredPlanets;
+  return filteredPlanets;
 }

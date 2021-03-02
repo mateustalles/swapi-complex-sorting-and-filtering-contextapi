@@ -7,7 +7,7 @@ import usePlanetsFiltering from '../hooks/usePlanetsFiltering';
 import useSWAPI from '../hooks/useSWAPI';
 import '../styles/PlanetsTable.scss';
 
-const tableHeaders = () => (
+const TableHeaders = () => (
   <tr>
     <th><SortButton columnName="name">Name</SortButton></th>
     <th><SortButton columnName="rotation_period">Rotation period</SortButton></th>
@@ -25,8 +25,8 @@ const tableHeaders = () => (
   </tr>
 );
 
-const planetRows = (planetsData) => (
-  planetsData.map(({
+const PlanetsRows = ({ filteredPlanets }) => (
+  filteredPlanets.map(({
     name, rotation_period: rotationPeriod, orbital_period: orbitalPeriod, diameter,
     climate, gravity, terrain, surface_water: surfaceWater, population, films, created,
     edited, url,
@@ -75,8 +75,9 @@ export default function PlanetsTable() {
 
   useEffect(() => {
     setIsLoading(false);
+    enableTopScroll();
     return () => setIsLoading(true);
-  });
+  }, [setIsLoading]);
 
   const tableRef = useRef();
 
@@ -88,13 +89,12 @@ export default function PlanetsTable() {
       </div>
       <Table striped bordered hover responsive className="planets-table" data-testid="table-container" ref={tableRef}>
         <thead>
-          {tableHeaders()}
+          <TableHeaders />
         </thead>
         <tbody className="table-body">
-          {planetRows(filteredPlanets)}
+          <PlanetsRows filteredPlanets={filteredPlanets} />
         </tbody>
       </Table>
-      {enableTopScroll()}
     </div>
   );
 }
