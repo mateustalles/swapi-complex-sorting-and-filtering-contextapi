@@ -25,7 +25,7 @@ const TableHeaders = () => (
   </tr>
 );
 
-const PlanetsRows = ({ filteredPlanets }) => (
+const PlanetsRows = (filteredPlanets) => (
   filteredPlanets.map(({
     name, rotation_period: rotationPeriod, orbital_period: orbitalPeriod, diameter,
     climate, gravity, terrain, surface_water: surfaceWater, population, films, created,
@@ -92,7 +92,7 @@ export default function PlanetsTable() {
           <TableHeaders />
         </thead>
         <tbody className="table-body">
-          <PlanetsRows filteredPlanets={filteredPlanets} />
+          {filteredPlanets && PlanetsRows(filteredPlanets)}
         </tbody>
       </Table>
     </div>

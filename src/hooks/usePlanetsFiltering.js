@@ -1,8 +1,9 @@
 import {
   useContext,
-  useState,
+  // useState,
   useEffect,
   useRef,
+  useReducer,
 } from 'react';
 import { PlanetsDBContext } from '../context/PlanetsDBContext';
 import useNumericFilters from './useNumericFilters';
@@ -60,63 +61,78 @@ const sortColumns = (sortFilters, filteredPlanets) => {
 };
 
 export default function usePlanetsFiltering(planetsData) {
-  const { filters: [filters, setFilters] } = useContext(PlanetsDBContext);
+  const { filters: [filters] } = useContext(PlanetsDBContext);
   const numericFilters = useNumericFilters(filters);
   const nameFilter = useNameFilter(filters);
   const sortFilters = useSortFilters(filters);
-  const [filteredPlanets, setFilteredPlanets] = useState(planetsData);
-
   const previousValues = useRef({ numericFilters, nameFilter, sortFilters });
 
-  useEffect(() => {
-    const prevRef = previousValues.current;
+  function init(initialData) {
+    return { filteredPlanets: initialData };
+  }
 
+  function reducer(state, action) {
+    switch (action.type) {
+      case 'filter':
+        return { filteredPlanets: action.payload };
+      case 'restore':
+        return { filteredPlanets: action.payload };
+      case 'clean':
+        return init(planetsData);
+      default:
+        throw new Error();
+    }
+  }
+
+  const [state, dispatch] = useReducer(reducer, { filteredPlanets: planetsData });
+
+  useEffect(() => {
+    const previousPlanets = state.filteredPlanets;
+    const prevRef = previousValues.current;
     if (previousValues.current.sortFilters !== sortFilters) {
-      const sortedPlanets = sortColumns(sortFilters, filteredPlanets);
-      setFilteredPlanets(sortedPlanets);
+      const sortedPlanets = sortColumns(sortFilters, state.filteredPlanets);
+      dispatch({ type: 'filter', payload: sortedPlanets });
       previousValues.current.sortFilters = sortFilters;
     }
-
     return () => {
-      setFilteredPlanets(planetsData);
+      dispatch({ type: 'restore', payload: previousPlanets });
       previousValues.current = prevRef;
     };
-  }, [planetsData, filteredPlanets, sortFilters]);
+  }, [sortFilters, state.filteredPlanets]);
 
   useEffect(() => {
+    const previousPlanets = state.filteredPlanets;
     const prevRef = previousValues.current;
-
     if (previousValues.current.nameFilter !== nameFilter) {
-      const planetsByName = filterByName(nameFilter, filteredPlanets);
-      setFilteredPlanets(planetsByName);
+      const planetsByName = filterByName(nameFilter, state.filteredPlanets);
+      dispatch({ type: 'filter', payload: planetsByName });
       previousValues.current.nameFilter = nameFilter;
     }
-
     return () => {
-      setFilteredPlanets(planetsData);
+      dispatch({ type: 'restore', payload: previousPlanets });
       previousValues.current = prevRef;
     };
-  }, [planetsData, filteredPlanets, nameFilter]);
+  }, [nameFilter, state.filteredPlanets]);
 
   useEffect(() => {
+    const previousPlanets = state.filteredPlanets;
     const prevRef = previousValues.current;
-
     if (previousValues.current.numericFilters !== numericFilters) {
       numericFilters.forEach(({ numericValues, numericValues: { column, comparison, value } }) => {
         if (column !== '' && comparison !== '' && value !== '') {
-          const planetsByNumericData = filterByNumericValues(filteredPlanets, numericValues);
-          setFilteredPlanets(planetsByNumericData);
+          const planetsByNumericData = filterByNumericValues(state.filteredPlanets, numericValues);
+          dispatch({ type: 'filter', payload: planetsByNumericData });
           // addFilterRow(numericFilters, filters, setFilters);
         }
       });
       previousValues.current.numericFilters = numericFilters;
     }
     return () => {
-      setFilteredPlanets(planetsData);
+      dispatch({ type: 'restore', payload: previousPlanets });
       previousValues.current = prevRef;
       // removeLastFilterRow(filters, setFilters);
     };
-  }, [filters, numericFilters, setFilters, filteredPlanets, planetsData]);
+  }, [numericFilters, state.filteredPlanets]);
 
-  return filteredPlanets;
+  return state.filteredPlanets;
 }
