@@ -17,12 +17,10 @@ export default function NumericFilters() {
   useEffect(() => {
     const isFilteringByNumbers = () => {
       const { numericValues: { column, comparison, value } } = numericFilters[0];
-      console.log(numericFilters[0]);
       if (column && comparison && value) {
-        console.log(!!column, !!comparison, !!value);
-        return setFilteringStatus((status) => ({ ...status, numbers: true }));
+        return setFilteringStatus((status) => ({ ...status, numeric: true }));
       }
-      return setFilteringStatus((status) => ({ ...status, numbers: false }));
+      return setFilteringStatus((status) => ({ ...status, numeric: false }));
     };
 
     if (numericFilters.length > 0) isFilteringByNumbers();
@@ -63,7 +61,11 @@ export default function NumericFilters() {
             comparison={comparison}
             updateFilters={updateFilters}
           />
-          <ValuesField filterIndex={filterIndex} value={value} updateFilters={updateFilters} />
+          <ValuesField
+            filterIndex={filterIndex}
+            value={value}
+            updateFilters={updateFilters}
+          />
           <DeleteFieldButton filterIndex={filterIndex} />
         </div>
       );

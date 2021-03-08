@@ -30,7 +30,7 @@ export default function PlanetsDBProvider({ children }) {
   ]);
   const [filteringStatus, setFilteringStatus] = useState({
     name: false,
-    numbers: false,
+    numeric: false,
   });
 
   const store = {
