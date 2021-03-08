@@ -4,6 +4,7 @@ import { PlanetsDBContext } from '../context/PlanetsDBContext';
 export default function NameFilter() {
   const {
     filters: [filters, setFilters],
+    filterStatus: [, setFilteringStatus],
   } = useContext(PlanetsDBContext);
 
   const dispatchNameFilter = (event) => {
@@ -12,6 +13,8 @@ export default function NameFilter() {
       if ('name' in filter && filter.name !== nameInput) return { name: nameInput };
       return filter;
     }));
+    if (nameInput !== '') return setFilteringStatus((status) => ({ ...status, name: true }));
+    return setFilteringStatus((status) => ({ ...status, name: false }));
   };
 
   return (

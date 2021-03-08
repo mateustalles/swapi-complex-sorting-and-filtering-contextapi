@@ -5,7 +5,7 @@ export const PlanetsDBContext = createContext();
 
 export default function PlanetsDBProvider({ children }) {
   const [planetsData, setPlanetsData] = useState([]);
-  const [filteredPlanets, setfilteredPlanets] = useState([]);
+  const [filteredPlanets, setFilteredPlanets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFilteredByName, setIsFilteredByName] = useState(false);
   const [filters, setFilters] = useState([
@@ -28,13 +28,18 @@ export default function PlanetsDBProvider({ children }) {
     ['rotation_period', 'Rotation period'],
     ['surface_water', 'Surface water'],
   ]);
+  const [filteringStatus, setFilteringStatus] = useState({
+    name: false,
+    numbers: false,
+  });
 
   const store = {
     data: [planetsData, setPlanetsData],
-    planets: [filteredPlanets, setfilteredPlanets],
+    planets: [filteredPlanets, setFilteredPlanets],
     loading: [isLoading, setIsLoading],
     filters: [filters, setFilters],
     nameFilter: [isFilteredByName, setIsFilteredByName],
+    filterStatus: [filteringStatus, setFilteringStatus],
     selectors: [selectors, setSelectors],
   };
 

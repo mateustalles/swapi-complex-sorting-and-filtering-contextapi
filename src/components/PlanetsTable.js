@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useContext } from 'react';
 import { Table } from 'react-bootstrap';
 import $ from 'jquery';
 import SortButton from './SortButton';
-// import usePlanetsFiltering from '../hooks/usePlanetsFiltering';
+import usePlanetsFiltering from '../hooks/usePlanetsFiltering';
 import useSWAPI from '../hooks/useSWAPI';
 import '../styles/PlanetsTable.scss';
 import { PlanetsDBContext } from '../context/PlanetsDBContext';
@@ -70,18 +70,18 @@ const enableTopScroll = () => {
 export default function PlanetsTable() {
   const {
     data: [, setPlanetsData],
-    planets: [filteredPlanets, setfilteredPlanets],
+    planets: [filteredPlanets, setFilteredPlanets],
   } = useContext(PlanetsDBContext);
   const data = useSWAPI();
 
   useEffect(() => {
     setPlanetsData(data);
-    setfilteredPlanets(data);
+    setFilteredPlanets(data);
 
     return () => setPlanetsData([]);
-  }, [data, setPlanetsData, setfilteredPlanets]);
+  }, [data, setPlanetsData, setFilteredPlanets]);
 
-  // usePlanetsFiltering(planetsData);
+  usePlanetsFiltering();
 
   useEffect(() => {
     enableTopScroll();
