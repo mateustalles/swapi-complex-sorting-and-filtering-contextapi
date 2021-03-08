@@ -2,12 +2,14 @@ import React, { useContext } from 'react';
 import { PlanetsDBContext } from '../context/PlanetsDBContext';
 
 export default function NameFilter() {
-  const { filters: [filters, setFilters] } = useContext(PlanetsDBContext);
+  const {
+    filters: [filters, setFilters],
+  } = useContext(PlanetsDBContext);
 
   const dispatchNameFilter = (event) => {
     const { target: { value: nameInput } } = event;
-    return setFilters(filters.map((filter) => {
-      if ('name' in filter) return { name: nameInput };
+    setFilters(filters.map((filter) => {
+      if ('name' in filter && filter.name !== nameInput) return { name: nameInput };
       return filter;
     }));
   };

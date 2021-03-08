@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 export const PlanetsDBContext = createContext();
 
 export default function PlanetsDBProvider({ children }) {
-  const [planetsData, setPlanetsData] = useState();
+  const [planetsData, setPlanetsData] = useState([]);
+  const [filteredPlanets, setfilteredPlanets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFilteredByName, setIsFilteredByName] = useState(false);
   const [filters, setFilters] = useState([
@@ -30,6 +31,7 @@ export default function PlanetsDBProvider({ children }) {
 
   const store = {
     data: [planetsData, setPlanetsData],
+    planets: [filteredPlanets, setfilteredPlanets],
     loading: [isLoading, setIsLoading],
     filters: [filters, setFilters],
     nameFilter: [isFilteredByName, setIsFilteredByName],

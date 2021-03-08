@@ -1,6 +1,5 @@
 import {
   useContext,
-  // useState,
   useEffect,
   useRef,
   useReducer,
@@ -10,15 +9,16 @@ import useNumericFilters from './useNumericFilters';
 import useNameFilter from './useNameFilter';
 import useSortFilters from './useSortFilters';
 
-const filterByName = (nameFilter, filteredPlanets) => {
-  if (nameFilter.name !== '') {
+const filterByName = (nameFilter, filteredPlanets, setFilteredPlanets) => {
+  if (nameFilter !== '') {
     const newNameFilter = `.*${nameFilter}.*`;
     const regExpFilter = new RegExp(newNameFilter, 'yi');
-    return filteredPlanets.filter(
+    console.log(nameFilter);
+    return setFilteredPlanets(filteredPlanets.filter(
       (planet) => planet.name.match(regExpFilter),
-    );
+    ));
   }
-  return filteredPlanets;
+  return setFilteredPlanets(filteredPlanets);
 };
 
 const filterByNumericValues = ({ column, value, comparison }, filteredPlanets) => {
@@ -60,75 +60,69 @@ const sortColumns = (sortFilters, filteredPlanets) => {
   return sortedPlanets;
 };
 
-export default function usePlanetsFiltering(planetsData) {
-  const { filters: [filters] } = useContext(PlanetsDBContext);
+export default function usePlanetsFiltering() {
+  const {
+    filters: [filters],
+    // data: [planetsData],
+    filtered: [filteredPlanets, setfilteredPlanets],
+  } = useContext(PlanetsDBContext);
   const numericFilters = useNumericFilters(filters);
   const nameFilter = useNameFilter(filters);
   const sortFilters = useSortFilters(filters);
 
-  function init(initialData) {
-    return { filteredPlanets: initialData };
-  }
+  // function planetsReducer(state, action) {
+  //   switch (action.type) {
+  //     case 'filter':
+  //       return { filteredPlanets: action.payload };
+  //     case 'restore':
+  //       return { filteredPlanets: action.payload };
+  //     default:
+  //       throw new Error();
+  //   }
+  // }
+  // const [state, dispatch] = useReducer(planetsReducer, { filteredPlanets: planetsData });
 
-  function reducer(state, action) {
-    console.log(action.payload);
-    switch (action.type) {
-      case 'filter':
-        return { filteredPlanets: action.payload };
-      case 'restore':
-        return { filteredPlanets: action.payload };
-      case 'init':
-        return init(action.payload);
-      default:
-        throw new Error();
-    }
-  }
-  const [state, dispatch] = useReducer(reducer, planetsData, init);
-
-  const previousValues = useRef({ numericFilters, nameFilter, sortFilters });
-
-  useEffect(() => {
-    dispatch({ type: 'init', payload: planetsData });
-  }, [planetsData]);
+  const previousValues = useRef({
+    // filteredPlanets: state.filteredPlanets,
+    numericFilters,
+    nameFilter,
+    sortFilters,
+  });
+  const prevRef = previousValues.current;
+  // const dataHasPlanets = state.filteredPlanets && state.filteredPlanets.length > 0;
 
   useEffect(() => {
-    // const previousPlanets = state.filteredPlanets;
-    const prevRef = previousValues.current;
+    // console.log(state.filteredPlanets);
     if (previousValues.current.sortFilters !== sortFilters) {
-      const sortedPlanets = sortColumns(sortFilters, state.filteredPlanets);
-      dispatch({ type: 'filter', payload: sortedPlanets });
+      const sortedPlanets = sortColumns(sortFilters, filteredPlanets);
+      setfilteredPlanets(sortedPlanets);
       previousValues.current.sortFilters = sortFilters;
     }
     return () => {
       previousValues.current = prevRef;
     };
-  }, [sortFilters, state.filteredPlanets]);
+  }, [sortFilters, filteredPlanets, prevRef, setfilteredPlanets]);
 
   useEffect(() => {
-    // const previousPlanets = state.filteredPlanets;
-    const prevRef = previousValues.current;
-    console.log(previousValues.current.nameFilter, nameFilter);
     if (previousValues.current.nameFilter !== nameFilter) {
-      const planetsByName = filterByName(nameFilter, state.filteredPlanets);
-      dispatch({ type: 'filter', payload: planetsByName });
+      const planetsByName = filterByName(nameFilter, filteredPlanets);
+      setfilteredPlanets(planetsByName);
       previousValues.current.nameFilter = nameFilter;
     }
+
     return () => {
       previousValues.current = prevRef;
     };
-  }, [nameFilter, state.filteredPlanets]);
+  }, [nameFilter, filteredPlanets, prevRef, setfilteredPlanets]);
 
   useEffect(() => {
-    // const previousPlanets = state.filteredPlanets;
-    const prevRef = previousValues.current;
     if (previousValues.current.numericFilters !== numericFilters) {
-      numericFilters.map(({ numericValues, numericValues: { column, comparison, value } }) => {
+      numericFilters.forEach(({ numericValues, numericValues: { column, comparison, value } }) => {
         if (column !== '' && comparison !== '' && value !== '') {
-          const planetsByNumericData = filterByNumericValues(numericValues, state.filteredPlanets);
-          dispatch({ type: 'filter', payload: planetsByNumericData });
+          const planetsByNumericData = filterByNumericValues(numericValues, filteredPlanets);
+          setfilteredPlanets(planetsByNumericData);
           // addFilterRow(numericFilters, filters, setFilters);
         }
-        return numericValues;
       });
       previousValues.current.numericFilters = numericFilters;
     }
@@ -136,7 +130,7 @@ export default function usePlanetsFiltering(planetsData) {
       previousValues.current = prevRef;
       // removeLastFilterRow(filters, setFilters);
     };
-  }, [numericFilters, state.filteredPlanets]);
+  }, [numericFilters, filteredPlanets, prevRef, setfilteredPlanets]);
 
-  return state.filteredPlanets;
+  return null;
 }

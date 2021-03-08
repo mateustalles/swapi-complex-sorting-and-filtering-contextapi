@@ -1,11 +1,11 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useContext } from 'react';
 import { Table } from 'react-bootstrap';
 import $ from 'jquery';
-// import { PlanetsDBContext } from '../context/PlanetsDBContext';
 import SortButton from './SortButton';
-import usePlanetsFiltering from '../hooks/usePlanetsFiltering';
+// import usePlanetsFiltering from '../hooks/usePlanetsFiltering';
 import useSWAPI from '../hooks/useSWAPI';
 import '../styles/PlanetsTable.scss';
+import { PlanetsDBContext } from '../context/PlanetsDBContext';
 
 const TableHeaders = () => (
   <tr>
@@ -68,8 +68,20 @@ const enableTopScroll = () => {
 };
 
 export default function PlanetsTable() {
+  const {
+    data: [, setPlanetsData],
+    planets: [filteredPlanets, setfilteredPlanets],
+  } = useContext(PlanetsDBContext);
   const data = useSWAPI();
-  const filteredPlanets = usePlanetsFiltering(data);
+
+  useEffect(() => {
+    setPlanetsData(data);
+    setfilteredPlanets(data);
+
+    return () => setPlanetsData([]);
+  }, [data, setPlanetsData, setfilteredPlanets]);
+
+  // usePlanetsFiltering(planetsData);
 
   useEffect(() => {
     enableTopScroll();
@@ -88,7 +100,7 @@ export default function PlanetsTable() {
           <TableHeaders />
         </thead>
         <tbody className="table-body">
-          <PlanetsRows filteredPlanets={filteredPlanets} />
+          {filteredPlanets && <PlanetsRows filteredPlanets={filteredPlanets} />}
         </tbody>
       </Table>
     </div>
