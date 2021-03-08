@@ -116,7 +116,10 @@ export default function usePlanetsFiltering() {
   useEffect(() => {
     const prevRef = previousValues.current;
     const { prevNumericFilters } = prevRef;
-    if (isFilteringByNumber && '0' in prevNumericFilters && prevNumericFilters !== numericFilters) {
+    console.log(isFilteringByNumber, '0' in prevNumericFilters, prevNumericFilters !== numericFilters);
+    if (isFilteringByNumber
+      && '0' in prevNumericFilters
+      && prevNumericFilters !== numericFilters) {
       console.log('filtered by number');
       numericFilters.forEach(({ numericValues, numericValues: { column, comparison, value } }) => {
         if (column !== '' && comparison !== '' && value !== '') {
@@ -135,7 +138,7 @@ export default function usePlanetsFiltering() {
       // removeLastFilterRow(filters, setFilters);
     };
   }, [
-    numericFilters, filteredPlanets, planetsData,
+    numericFilters, filteredPlanets, planetsData, filters,
     isFilteringByName, isFilteringByNumber, setFilteredPlanets,
   ]);
 
