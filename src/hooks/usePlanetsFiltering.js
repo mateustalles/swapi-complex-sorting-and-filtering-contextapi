@@ -118,7 +118,6 @@ export default function usePlanetsFiltering() {
     prevRef.prevNameFilter = nameFilter;
 
     return () => {
-
     };
   }, [nameFilter, isFilteringByName, planetsData, setFilteredPlanets]);
 

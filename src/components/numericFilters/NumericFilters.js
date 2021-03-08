@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import useNumericFilters from '../../hooks/useNumericFilters';
 import { PlanetsDBContext } from '../../context/PlanetsDBContext';
 import ColumnsField from './ColumnsField';
@@ -7,8 +7,26 @@ import DeleteFieldButton from './DeleteFieldButton';
 import ValuesField from './ValuesField';
 
 export default function NumericFilters() {
-  const { filters: [filters, setFilters] } = useContext(PlanetsDBContext);
+  const {
+    filters: [filters, setFilters],
+    filterStatus: [, setFilteringStatus],
+  } = useContext(PlanetsDBContext);
+
   const numericFilters = useNumericFilters(filters);
+
+  useEffect(() => {
+    const isFilteringByNumbers = () => {
+      const { numericValues: { column, comparison, value } } = numericFilters[0];
+      console.log(numericFilters[0]);
+      if (column && comparison && value) {
+        console.log(!!column, !!comparison, !!value);
+        return setFilteringStatus((status) => ({ ...status, numbers: true }));
+      }
+      return setFilteringStatus((status) => ({ ...status, numbers: false }));
+    };
+
+    if (numericFilters.length > 0) isFilteringByNumbers();
+  }, [numericFilters, setFilteringStatus]);
 
   const updateFilters = (e, filterIndex) => {
     const filteredFilters = filters.map((filter, index) => {
