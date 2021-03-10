@@ -2,6 +2,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
 } from 'react';
 import { PlanetsDBContext } from '../context/PlanetsDBContext';
 import useNumericFilters from './useNumericFilters';
@@ -66,6 +67,11 @@ export default function usePlanetsFiltering() {
   const nameFilter = useNameFilter(filters);
   const { name: isFilteringByName, numeric: isFilteringByNumber } = filteringStatus;
 
+  const previousStates = useRef({
+    wasFilteringByNumber: false,
+    lastResults: [],
+  });
+
   // const sortFilters = useSortFilters(filters);
   // useEffect(() => {
   //   // console.log(state.filteredPlanets);
@@ -80,22 +86,29 @@ export default function usePlanetsFiltering() {
   const planets = useMemo(() => ({ current: planetsData }), [planetsData]);
 
   useEffect(() => {
+    console.log(previousStates, isFilteringByNumber);
     const query = nameFilter['0'] ? nameFilter['0'].name : null;
     let planetsByName = [];
-    if (query) {
+    if (query && isFilteringByNumber) {
+      console.log('filtered by name');
+      planetsByName = filterByName(
+        query, planets.current,
+      );
+      // planetsByName = planetsByName.filter((planet) => planets.current.includes(planet));
+      planets.current = planetsByName;
+    } else if (query && !isFilteringByNumber) {
       console.log('filtered by name');
       planetsByName = filterByName(
         query, planetsData,
       );
-      if (isFilteringByNumber) {
-        planetsByName = planetsByName.filter((planet) => planets.current.includes(planet));
-      }
       planets.current = planetsByName;
+    } else if (!query && !previousStates.current.wasFilteringByNumber) {
+      planets.current = planetsData;
     } else {
-      planetsByName = planetsData;
-      planets.current = planetsByName;
+      planets.current = previousStates.current.lastResults || planetsData;
     }
 
+    setFilteredPlanets(planets.current);
     return () => {
       if (planetsData
         && !isFilteringByName
@@ -107,6 +120,9 @@ export default function usePlanetsFiltering() {
   ]);
 
   useEffect(() => {
+    const numericFilterRef = previousStates.current;
+    console.log(previousStates);
+    // if (isFilteringByNumber) {
     console.log('filtered by number');
     numericFilters.forEach(({ numericValues, numericValues: { column, comparison, value } }) => {
       console.log(column, comparison, value);
@@ -115,12 +131,17 @@ export default function usePlanetsFiltering() {
         planets.current = planetsByNumericData;
       }
     });
-
+    previousStates.current.wasFilteringByNumber = true;
+    previousStates.current.lastResults = planets.current;
     setFilteredPlanets(planets.current);
+    // }
     return () => {
       if (planetsData
         && !isFilteringByNumber
-        && !isFilteringByName) setFilteredPlanets(planetsData);
+        && !isFilteringByName) {
+        numericFilterRef.wasFilteringByNumber = false;
+        setFilteredPlanets(planetsData);
+      }
     };
   }, [
     numericFilters, planetsData, filters, planets,

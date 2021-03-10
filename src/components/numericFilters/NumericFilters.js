@@ -13,7 +13,6 @@ export default function NumericFilters() {
   } = useContext(PlanetsDBContext);
 
   const numericFilters = useNumericFilters(filters);
-  console.log(numericFilters);
   useEffect(() => {
     const addFilterRow = () => {
       setFilters(
