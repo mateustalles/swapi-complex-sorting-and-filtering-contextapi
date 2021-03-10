@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import useNumericFilters from '../../hooks/useNumericFilters';
 import { PlanetsDBContext } from '../../context/PlanetsDBContext';
 import ColumnsField from './ColumnsField';
@@ -13,6 +13,25 @@ export default function NumericFilters() {
   } = useContext(PlanetsDBContext);
 
   const numericFilters = useNumericFilters(filters);
+
+  useEffect(() => {
+    const addFilterRow = () => {
+      console.log('rodei');
+      console.log(numericFilters);
+      setFilters((filterSet) => [...filterSet, { numericValues: { column: '', comparison: '', value: '' } }]);
+    };
+
+    if (numericFilters.length < 5) {
+      numericFilters.forEach(({
+        numericValues:
+        { column, comparison, value },
+      }, filterIndex) => {
+        if (column && comparison && value && filterIndex === numericFilters.length - 1) {
+          addFilterRow();
+        }
+      });
+    }
+  }, [numericFilters, setFilters]);
 
   const isFilteringByNumbers = (filterSet) => {
     const { numericValues: { column, comparison, value } } = filterSet[1];
@@ -32,7 +51,7 @@ export default function NumericFilters() {
       }
       return filter;
     });
-    // console.log(filteredFilters);
+
     isFilteringByNumbers(filteredFilters);
     return setFilters(filteredFilters);
   };

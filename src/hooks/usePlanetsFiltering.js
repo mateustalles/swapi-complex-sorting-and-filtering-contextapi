@@ -31,12 +31,6 @@ const filterByNumericValues = ({ column, value, comparison }, filteredPlanets) =
   );
 };
 
-// const addFilterRow = (numericFilters, filters, setFilters) => {
-//   if (numericFilters.length < 5) {
-//     setFilters([...filters, { numericValues: { column: '', comparison: '', value: '' } }]);
-//   }
-// };
-
 // const removeLastFilterRow = (filters, setFilters) => {
 //   const poppedFilter = filters.pop();
 //   setFilters(poppedFilter);
@@ -72,12 +66,6 @@ export default function usePlanetsFiltering() {
   const nameFilter = useNameFilter(filters);
   // const sortFilters = useSortFilters(filters);
   const { name: isFilteringByName, numeric: isFilteringByNumber } = filteringStatus;
-
-  // const previousValues = useRef({
-  //   prevNumericFilterStatus: isFilteringByNumber,
-  //   prevNameFilter: nameFilter,
-  //   prevNumericFilters: numericFilters,
-  // });
 
   // useEffect(() => {
   //   // console.log(state.filteredPlanets);
