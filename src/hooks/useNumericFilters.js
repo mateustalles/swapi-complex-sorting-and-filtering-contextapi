@@ -16,9 +16,8 @@ export default function useNumericFilters(filters) {
   }, []);
 
   useEffect(() => {
-    const updatedNumericFilters = filters.filter((filter) => 'numericValues' in filter);
-
-    if (isSafe.current) setNumericFilters(updatedNumericFilters);
+    const updatedNumericFilters = filters.filter((filter) => 'numericFilters' in filter);
+    if (isSafe.current) setNumericFilters(updatedNumericFilters['0'].numericFilters);
 
     return () => {
       if (isSafe.current) setNumericFilters([]);

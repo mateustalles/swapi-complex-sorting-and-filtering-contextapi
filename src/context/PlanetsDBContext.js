@@ -13,11 +13,15 @@ export default function PlanetsDBProvider({ children }) {
       name: '',
     },
     {
-      numericValues: {
-        column: '',
-        comparison: '',
-        value: '',
-      },
+      numericFilters: [
+        {
+          numericValues: {
+            column: '',
+            comparison: '',
+            value: '',
+          },
+        },
+      ],
     },
     { column: 'name', order: 'ASC' },
   ]);

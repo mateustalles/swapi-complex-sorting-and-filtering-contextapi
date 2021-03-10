@@ -13,47 +13,61 @@ export default function NumericFilters() {
   } = useContext(PlanetsDBContext);
 
   const numericFilters = useNumericFilters(filters);
-
+  console.log(numericFilters);
   useEffect(() => {
     const addFilterRow = () => {
-      console.log('rodei');
-      console.log(numericFilters);
-      setFilters((filterSet) => [...filterSet, { numericValues: { column: '', comparison: '', value: '' } }]);
+      setFilters(
+        (filterSet) => filterSet.map((filter, index) => {
+          if (index === 1) {
+            return {
+              numericFilters: [
+                ...filter.numericFilters, {
+                  numericValues: { column: '', comparison: '', value: '' },
+                },
+              ],
+            };
+          }
+          return filter;
+        }),
+      );
     };
 
     if (numericFilters.length < 5) {
-      numericFilters.forEach(({
-        numericValues:
-        { column, comparison, value },
-      }, filterIndex) => {
+      numericFilters.forEach(({ numericValues: { column, comparison, value } },
+        filterIndex) => {
         if (column && comparison && value && filterIndex === numericFilters.length - 1) {
-          addFilterRow();
+          return addFilterRow();
         }
+        return null;
       });
     }
   }, [numericFilters, setFilters]);
 
-  const isFilteringByNumbers = (filterSet) => {
-    const { numericValues: { column, comparison, value } } = filterSet[1];
-    if (column && comparison && value) {
-      return setFilteringStatus((status) => ({ ...status, numeric: true }));
-    }
-    return setFilteringStatus((status) => ({ ...status, numeric: false }));
-  };
-
   const updateFilters = (e, filterIndex) => {
-    const filteredFilters = filters.map((filter, index) => {
-      if ('numericValues' in filter && index === filterIndex + 1) {
-        return {
+    let isFilteringByNumbers = false;
+    const filteredFilters = [];
+
+    numericFilters.forEach((filter, index) => {
+      const { numericValues: { column, comparison, value } } = filter;
+      if (column && comparison && value) isFilteringByNumbers = true;
+
+      if (index === filterIndex) {
+        return filteredFilters.push({
           numericValues:
             { ...filter.numericValues, [e.target.id]: e.target.value },
-        };
+        });
       }
-      return filter;
+      return filteredFilters.push(filter);
     });
 
-    isFilteringByNumbers(filteredFilters);
-    return setFilters(filteredFilters);
+    setFilteringStatus((status) => ({ ...status, numeric: isFilteringByNumbers }));
+
+    setFilters(
+      (filterSet) => filterSet.map((filter, index) => {
+        if (index === 1) return { numericFilters: [...filteredFilters] };
+        return filter;
+      }),
+    );
   };
 
   return (
