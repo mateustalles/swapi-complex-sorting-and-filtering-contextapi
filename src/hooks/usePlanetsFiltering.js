@@ -2,15 +2,14 @@ import {
   useContext,
   useEffect,
   useRef,
-  // useReducer,
 } from 'react';
 import { PlanetsDBContext } from '../context/PlanetsDBContext';
 import useNumericFilters from './useNumericFilters';
 import useNameFilter from './useNameFilter';
 // import useSortFilters from './useSortFilters';
 
-const filterByName = ([{ name: planetName }], planets) => {
-  if (planetName !== '') {
+const filterByName = (planetName = null, planets) => {
+  if (planetName) {
     const newNameFilter = `.*${planetName}.*`;
     const regExpFilter = new RegExp(newNameFilter, 'yi');
     return planets.filter(
@@ -63,24 +62,22 @@ export default function usePlanetsFiltering() {
   const {
     filters: [filters],
     data: [planetsData],
-    planets: [filteredPlanets, setFilteredPlanets],
+    planets: [, setFilteredPlanets],
     filterStatus: [filteringStatus],
   } = useContext(PlanetsDBContext);
+
+  const planets = useRef(null);
 
   const numericFilters = useNumericFilters(filters);
   const nameFilter = useNameFilter(filters);
   // const sortFilters = useSortFilters(filters);
   const { name: isFilteringByName, numeric: isFilteringByNumber } = filteringStatus;
 
-  const previousValues = useRef({
-    // filteredPlanets: state.filteredPlanets,
-    prevNameFilterStatus: isFilteringByName,
-    prevNumericFilterStatus: isFilteringByNumber,
-    prevNameFilter: nameFilter,
-    prevNumericFilters: numericFilters,
-  });
-
-  // const dataHasPlanets = state.filteredPlanets && state.filteredPlanets.length > 0;
+  // const previousValues = useRef({
+  //   prevNumericFilterStatus: isFilteringByNumber,
+  //   prevNameFilter: nameFilter,
+  //   prevNumericFilters: numericFilters,
+  // });
 
   // useEffect(() => {
   //   // console.log(state.filteredPlanets);
@@ -94,51 +91,42 @@ export default function usePlanetsFiltering() {
   // }, [sortFilters, filteredPlanets, prevRef, setFilteredPlanets]);
 
   useEffect(() => {
-    const prevRef = previousValues.current;
-    const { prevNameFilter } = prevRef;
-    if (isFilteringByName && '0' in prevNameFilter && prevNameFilter !== nameFilter) {
-      console.log('filtered by name');
-      const planetsByName = filterByName(nameFilter, filteredPlanets);
-      setFilteredPlanets(planetsByName);
-    }
-    prevRef.prevNameFilter = nameFilter;
+    const query = nameFilter['0'] ? nameFilter['0'].name : null;
+
+    console.log('filtered by name');
+    const planetsByName = filterByName(query, planetsData);
+    setFilteredPlanets(planetsByName);
+    planets.current = planetsByName;
 
     return () => {
-      if (planetsData.length > 0
+      if (planetsData
         && !isFilteringByName
         && !isFilteringByNumber) setFilteredPlanets(planetsData);
     };
   }, [
-    nameFilter, isFilteringByName, isFilteringByNumber, planetsData,
-    filteredPlanets, setFilteredPlanets,
+    nameFilter, isFilteringByName, isFilteringByNumber,
+    setFilteredPlanets, planetsData,
   ]);
 
   useEffect(() => {
-    const prevRef = previousValues.current;
-    const { prevNumericFilters } = prevRef;
-    console.log(isFilteringByNumber, '0' in prevNumericFilters, prevNumericFilters !== numericFilters);
-    if (isFilteringByNumber
-      && '0' in prevNumericFilters
-      && prevNumericFilters !== numericFilters) {
-      console.log('filtered by number');
-      numericFilters.forEach(({ numericValues, numericValues: { column, comparison, value } }) => {
-        if (column !== '' && comparison !== '' && value !== '') {
-          const planetsByNumericData = filterByNumericValues(numericValues, filteredPlanets);
-          setFilteredPlanets(planetsByNumericData);
-          // addFilterRow(numericFilters, filters, setFilters);
-        }
-      });
-    }
-    prevRef.prevNumericFilters = numericFilters;
+    console.log('filtered by number');
+    numericFilters.forEach(({ numericValues, numericValues: { column, comparison, value } }) => {
+      console.log(column, comparison, value);
+      if (column !== '' && comparison !== '' && value !== '') {
+        const planetsByNumericData = filterByNumericValues(numericValues, planets.current);
+        setFilteredPlanets(planetsByNumericData);
+        // addFilterRow(numericFilters, filters, setFilters);
+      }
+    });
 
     return () => {
-      if (planetsData.length > 0
+      if (planetsData
         && !isFilteringByNumber
         && !isFilteringByName) setFilteredPlanets(planetsData);
       // removeLastFilterRow(filters, setFilters);
     };
   }, [
-    numericFilters, filteredPlanets, planetsData, filters,
+    numericFilters, planetsData, filters,
     isFilteringByName, isFilteringByNumber, setFilteredPlanets,
   ]);
 

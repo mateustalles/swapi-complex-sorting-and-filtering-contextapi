@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 export const PlanetsDBContext = createContext();
 
 export default function PlanetsDBProvider({ children }) {
-  const [planetsData, setPlanetsData] = useState([]);
-  const [filteredPlanets, setFilteredPlanets] = useState([]);
+  const [planetsData, setPlanetsData] = useState(null);
+  const [filteredPlanets, setFilteredPlanets] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isFilteredByName, setIsFilteredByName] = useState(false);
   const [filters, setFilters] = useState([

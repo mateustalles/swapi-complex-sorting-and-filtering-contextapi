@@ -32,7 +32,7 @@ export default function NumericFilters() {
       }
       return filter;
     });
-    console.log(filteredFilters);
+    // console.log(filteredFilters);
     isFilteringByNumbers(filteredFilters);
     return setFilters(filteredFilters);
   };
