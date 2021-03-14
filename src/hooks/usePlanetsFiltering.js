@@ -4,7 +4,7 @@ import {
   // useEffect,
   // useLayoutEffect,
   useState,
-  useMemo,
+  // useMemo,
   useRef,
   useEffect,
 } from 'react';
@@ -65,15 +65,12 @@ export default function usePlanetsFiltering() {
     data: [planetsData],
     filterStatus: [filteringStatus],
   } = useContext(PlanetsDBContext);
-
   const numericFilters = useNumericFilters(filters);
   const nameFilter = useNameFilter(filters);
+  const [planetsFilteredByName, setPlanetsFilteredByName] = useState(new Set());
+  const [planetsFilteredByNumber, setPlanetsFilteredByNumber] = useState(new Set());
   const { name: isFilteringByName, numeric: isFilteringByNumber } = filteringStatus;
-
-  const [planetsFilteredByName, setPlanetsFilteredByName] = useState([]);
-  const [planetsFilteredByNumber, setPlanetsFilteredByNumber] = useState([]);
-
-  const previousFiltersState = useRef(numericFilters);
+  const previousFiltersState = useRef({ numericFilters });
 
   // const sortFilters = useSortFilters(filters);
   // useEffect(() => {
@@ -87,8 +84,6 @@ export default function usePlanetsFiltering() {
   //   };
   // }, [sortFilters, filteredPlanets, prevRef, setFilteredPlanets]);
 
-  const planets = useMemo(() => ({ current: planetsData }), [planetsData]);
-
   useEffect(() => {
     const query = nameFilter['0'] ? nameFilter['0'].name : null;
     if (query) {
@@ -96,44 +91,40 @@ export default function usePlanetsFiltering() {
       const planetsByName = filterByName(
         query, planetsData,
       );
-      setPlanetsFilteredByName(planetsByName);
+      setPlanetsFilteredByName(new Set(planetsByName));
     } else if (!query || query === '') {
-      setPlanetsFilteredByName(planets);
+      setPlanetsFilteredByName(new Set(planetsData));
     }
   }, [
-    nameFilter, isFilteringByName, isFilteringByNumber,
-    planetsData, planets,
+    nameFilter, isFilteringByName, isFilteringByNumber, planetsData,
   ]);
 
   useEffect(() => {
     const filterRef = previousFiltersState.current.numericFilters;
+    let filteredData = planetsData;
     numericFilters.forEach((
       { numericValues, numericValues: { column, comparison, value } }, index,
     ) => {
-      console.log(previousFiltersState);
-      // console.log(filterRef[index] !== numericValues, filterRef[index], numericValues);
       if (column !== '' && comparison !== '' && value !== '' && filterRef[index] !== numericValues) {
         console.log('filtered by number');
-        const planetsByNumericData = filterByNumericValues(numericValues, planetsData);
-        previousFiltersState[index] = numericValues;
-        setPlanetsFilteredByNumber(planetsByNumericData);
+        const planetsByNumericData = filterByNumericValues(numericValues, filteredData);
+        filteredData = planetsByNumericData;
       }
+      previousFiltersState.current[index] = numericValues;
     });
+    setPlanetsFilteredByNumber(new Set(filteredData));
   }, [
     numericFilters, planetsData, filters,
     isFilteringByName, isFilteringByNumber,
   ]);
 
   const filterPlanets = () => {
-    let filteredData = [];
-    filteredData = planetsFilteredByName.length > 0
-      ? planetsData.filter((planet) => planetsFilteredByName.includes(planet)) : planetsData;
-    filteredData = planetsFilteredByNumber.length > 0
-      ? filteredData.filter((planet) => planetsFilteredByNumber.includes(planet)) : filteredData;
+    const planetsIntersection = new Set([...planetsFilteredByName]
+      .filter((planet) => planetsFilteredByNumber.has(planet)));
 
-    console.log(filteredData);
-    return filteredData;
+    console.log(planetsIntersection);
+    return [...planetsIntersection];
   };
 
-  return filterPlanets();
+  return (isFilteringByName || isFilteringByNumber) ? filterPlanets() : planetsData;
 }

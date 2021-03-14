@@ -75,11 +75,9 @@ const enableTopScroll = () => {
 export default function PlanetsTable() {
   const {
     data: [, setPlanetsData],
-    // planets: [filteredPlanets, setFilteredPlanets],
   } = useContext(PlanetsDBContext);
   const data = useSWAPI();
   const filteredData = usePlanetsFiltering();
-  // const [filteredPlanets] = useState(filteredData);
 
   useEffect(() => {
     setPlanetsData(data);
@@ -90,7 +88,6 @@ export default function PlanetsTable() {
   }, []);
 
   const tableRef = useRef();
-  console.log(filteredData);
 
   return (
     <div>
@@ -103,7 +100,7 @@ export default function PlanetsTable() {
           <TableHeaders />
         </thead>
         <tbody className="table-body">
-          <PlanetsRows filteredPlanets={filteredData || data} />
+          <PlanetsRows filteredPlanets={filteredData || []} />
         </tbody>
       </Table>
     </div>
