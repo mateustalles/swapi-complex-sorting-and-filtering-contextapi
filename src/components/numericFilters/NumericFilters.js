@@ -16,8 +16,8 @@ export default function NumericFilters() {
   useEffect(() => {
     const addFilterRow = () => {
       setFilters(
-        (filterSet) => filterSet.map((filter, index) => {
-          if (index === 1) {
+        (filterSet) => filterSet.map((filter) => {
+          if ('numericFilters' in filter) {
             return {
               numericFilters: [
                 ...filter.numericFilters, {

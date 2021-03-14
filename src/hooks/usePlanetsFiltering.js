@@ -1,10 +1,6 @@
 import {
   useContext,
-  // useEffect,
-  // useEffect,
-  // useLayoutEffect,
   useState,
-  // useMemo,
   useRef,
   useEffect,
 } from 'react';
@@ -86,7 +82,6 @@ export default function usePlanetsFiltering(planetsData) {
   useEffect(() => {
     const query = nameFilter['0'] ? nameFilter['0'].name : null;
     if (query) {
-      console.log('filtered by name');
       const planetsByName = filterByName(
         query, planetsData,
       );
@@ -103,7 +98,6 @@ export default function usePlanetsFiltering(planetsData) {
       { numericValues, numericValues: { column, comparison, value } }, index,
     ) => {
       if (column !== '' && comparison !== '' && value !== '' && filterRef[index] !== numericValues) {
-        console.log('filtered by number');
         const planetsByNumericData = filterByNumericValues(numericValues, filteredData);
         filteredData = planetsByNumericData;
       }
@@ -116,18 +110,19 @@ export default function usePlanetsFiltering(planetsData) {
 
   const filterPlanets = () => {
     let planetsIntersection;
-    if (isFilteringByName) {
+    if (isFilteringByName && !isFilteringByNumber) {
       planetsIntersection = new Set([...planetsFilteredByName]);
-    } else if (isFilteringByNumber) {
+    } else if (isFilteringByNumber && !isFilteringByName) {
       planetsIntersection = new Set([...planetsFilteredByNumber]);
     } else if (isFilteringByName && isFilteringByNumber) {
-      planetsIntersection = new Set([...planetsFilteredByName]
+      planetsIntersection = new Set([...planetsData]
+        .filter((planet) => planetsFilteredByName.has(planet))
         .filter((planet) => planetsFilteredByNumber.has(planet)));
+    } else {
+      planetsIntersection = new Set([...planetsData]);
     }
-
-    console.log(planetsIntersection);
     return [...planetsIntersection];
   };
-  console.log(isFilteringByNumber, isFilteringByName);
-  return (isFilteringByName || isFilteringByNumber) ? filterPlanets() : planetsData;
+
+  return filterPlanets();
 }
