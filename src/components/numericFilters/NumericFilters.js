@@ -11,8 +11,8 @@ export default function NumericFilters() {
     filters: [filters, setFilters],
     filterStatus: [, setFilteringStatus],
   } = useContext(PlanetsDBContext);
-
   const numericFilters = useNumericFilters(filters);
+
   useEffect(() => {
     const addFilterRow = () => {
       setFilters(
@@ -42,28 +42,32 @@ export default function NumericFilters() {
     }
   }, [numericFilters, setFilters]);
 
-  const updateFilters = (e, filterIndex) => {
+  const checkFilteringStatus = (filteredFilters) => {
     let isFilteringByNumbers = false;
+    const { numericValues: { column, comparison, value } } = filteredFilters[0];
+    if (column && comparison && value) isFilteringByNumbers = true;
+    setFilteringStatus((status) => ({ ...status, numeric: isFilteringByNumbers }));
+  };
+
+  const updateFilters = (e, filterIndex) => {
     const filteredFilters = [];
 
     numericFilters.forEach((filter, index) => {
-      const { numericValues: { column, comparison, value } } = filter;
-      if (column && comparison && value) isFilteringByNumbers = true;
-
+      const { numericValues } = filter;
       if (index === filterIndex) {
         return filteredFilters.push({
           numericValues:
-            { ...filter.numericValues, [e.target.id]: e.target.value },
+            { ...numericValues, [e.target.id]: e.target.value },
         });
       }
       return filteredFilters.push(filter);
     });
 
-    setFilteringStatus((status) => ({ ...status, numeric: isFilteringByNumbers }));
+    checkFilteringStatus(filteredFilters);
 
     setFilters(
-      (filterSet) => filterSet.map((filter, index) => {
-        if (index === 1) return { numericFilters: [...filteredFilters] };
+      (filterSet) => filterSet.map((filter) => {
+        if ('numericFilters' in filter) return { numericFilters: [...filteredFilters] };
         return filter;
       }),
     );

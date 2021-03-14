@@ -59,10 +59,9 @@ const filterByNumericValues = ({ column, value, comparison }, filteredPlanets) =
 //   return sortedPlanets;
 // };
 
-export default function usePlanetsFiltering() {
+export default function usePlanetsFiltering(planetsData) {
   const {
     filters: [filters],
-    data: [planetsData],
     filterStatus: [filteringStatus],
   } = useContext(PlanetsDBContext);
   const numericFilters = useNumericFilters(filters);
@@ -92,11 +91,9 @@ export default function usePlanetsFiltering() {
         query, planetsData,
       );
       setPlanetsFilteredByName(new Set(planetsByName));
-    } else if (!query || query === '') {
-      setPlanetsFilteredByName(new Set(planetsData));
     }
   }, [
-    nameFilter, isFilteringByName, isFilteringByNumber, planetsData,
+    nameFilter, planetsData,
   ]);
 
   useEffect(() => {
@@ -115,16 +112,22 @@ export default function usePlanetsFiltering() {
     setPlanetsFilteredByNumber(new Set(filteredData));
   }, [
     numericFilters, planetsData, filters,
-    isFilteringByName, isFilteringByNumber,
   ]);
 
   const filterPlanets = () => {
-    const planetsIntersection = new Set([...planetsFilteredByName]
-      .filter((planet) => planetsFilteredByNumber.has(planet)));
+    let planetsIntersection;
+    if (isFilteringByName) {
+      planetsIntersection = new Set([...planetsFilteredByName]);
+    } else if (isFilteringByNumber) {
+      planetsIntersection = new Set([...planetsFilteredByNumber]);
+    } else if (isFilteringByName && isFilteringByNumber) {
+      planetsIntersection = new Set([...planetsFilteredByName]
+        .filter((planet) => planetsFilteredByNumber.has(planet)));
+    }
 
     console.log(planetsIntersection);
     return [...planetsIntersection];
   };
-
+  console.log(isFilteringByNumber, isFilteringByName);
   return (isFilteringByName || isFilteringByNumber) ? filterPlanets() : planetsData;
 }
