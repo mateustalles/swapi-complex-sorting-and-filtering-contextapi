@@ -1,4 +1,9 @@
-import React, { useRef, useEffect, useContext } from 'react';
+import React, {
+  useRef,
+  useEffect,
+  useContext,
+  // useState,
+} from 'react';
 import { Table } from 'react-bootstrap';
 import $ from 'jquery';
 import SortButton from './SortButton';
@@ -70,24 +75,22 @@ const enableTopScroll = () => {
 export default function PlanetsTable() {
   const {
     data: [, setPlanetsData],
-    planets: [filteredPlanets, setFilteredPlanets],
+    // planets: [filteredPlanets, setFilteredPlanets],
   } = useContext(PlanetsDBContext);
   const data = useSWAPI();
+  const filteredData = usePlanetsFiltering();
+  // const [filteredPlanets] = useState(filteredData);
 
   useEffect(() => {
     setPlanetsData(data);
-    setFilteredPlanets(data);
-
-    return () => setPlanetsData([]);
-  }, [data, setPlanetsData, setFilteredPlanets]);
-
-  usePlanetsFiltering();
+  }, [data, setPlanetsData]);
 
   useEffect(() => {
     enableTopScroll();
   }, []);
 
   const tableRef = useRef();
+  console.log(filteredData);
 
   return (
     <div>
@@ -100,7 +103,7 @@ export default function PlanetsTable() {
           <TableHeaders />
         </thead>
         <tbody className="table-body">
-          {filteredPlanets && <PlanetsRows filteredPlanets={filteredPlanets} />}
+          <PlanetsRows filteredPlanets={filteredData || data} />
         </tbody>
       </Table>
     </div>
