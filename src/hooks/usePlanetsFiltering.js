@@ -10,10 +10,9 @@ import useNameFilter from './useNameFilter';
 // import useSortFilters from './useSortFilters';
 
 const filterByName = (planetName = null, planets) => {
-  console.log(planetName, planets);
   if (planetName && planets) {
     const newNameFilter = `.*${planetName}.*`;
-    const regExpFilter = new RegExp(newNameFilter, 'yi');
+    const regExpFilter = new RegExp(newNameFilter, 'gyi');
     const filteredPlanets = planets.filter(
       (planet) => planet.name.match(regExpFilter),
     );
